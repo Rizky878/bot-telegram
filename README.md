@@ -46,6 +46,6 @@ get bot token at [`@BotFather`](http://t.me/BotFather).
 # Thanks To
 * [`Telegraf`](https://github.com/telegraf/telegraf)
 * [`Pais`](https://github.com/Paiiss)
-* [`Doyatama Code (Guru)`](`https://youtube.com/channel/UCctNhbMwbMs-5bdfuQv1aXg`)
+* [`Doyatama Code (Guru)`](https://youtube.com/channel/UCctNhbMwbMs-5bdfuQv1aXg)
 * `Rizky Fadilah`
 ~
