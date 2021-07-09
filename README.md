@@ -54,6 +54,6 @@ get bot token at [`@BotFather`](http://t.me/BotFather).
 * [`Rizky Fadilah`](https://wa.me/6282387804410)
 
 # Donate
-* [`Pulsa`](6285364937006)(Telkomsel)
+* [`Pulsa`] (6285364937006)(Telkomsel)
 
 
