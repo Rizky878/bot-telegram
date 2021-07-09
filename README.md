@@ -45,7 +45,7 @@ get bot token at [`@BotFather`](http://t.me/BotFather).
 * [`IkyyBot`](https://t.me/Rzkyyybot)
 
 ## Note:
-* You can request a case in my [`WhatsApp`](http://wa.me/682387804410).
+* You can request a case in my [`WhatsApp`](http://wa.me/6282387804410).
 
 # Thanks To
 * [`Telegraf`](https://github.com/telegraf/telegraf)
