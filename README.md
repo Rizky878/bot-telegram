@@ -2,6 +2,9 @@
 <img src="https://media.tenor.com/images/3e0c7be0cb8e24c389f5e1f78a8f69a5/tenor.gif" width="478" height="374.3373493975904" alt="Anime Pout GIF - Anime Pout Hmph GIFs" style="max-width: 478px; background-color: rgb(63, 63, 63);">
 </p>
 <p align="center">
+<a href="#"><img title="TELEGRAM BOT" src="https://img.shields.io/badge/Termux Bot Telegram-white?colorA=%23ff0000&colorB=%23017e40&style=for-the-badge"></a>
+</p>
+<p align="center">
 <a href="https://github.com/Rizky878"><img title="Author" src="https://img.shields.io/badge/Author-Rizky%20Fadilah-red.svg?style=for-the-badge&logo=github"></a>
 </p>
 
