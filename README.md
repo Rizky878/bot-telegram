@@ -28,7 +28,7 @@
 get bot token at [`@BotFather`](http://t.me/BotFather).
 ```json
 { 
-    const Bot_Token = 'TOKEN BOT' //Ganti Dengan Token Bot Telegram Mu!
+   "Bot_Token" : 'TOKEN BOT' //Ganti Dengan Token Bot Telegram Mu!
 }
 ```
 
