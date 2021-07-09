@@ -13,7 +13,7 @@
 ## Untuk Windows Instal Materi Tambahan Di Bawah Ini. Untuk Termux, cukup clone repo ini dan instal seperti contoh di bawah ini 
  
 
-* [ `Unduh Node JS` ] ( https://nodejs.org/en/download/ )
+* [`Unduh Node JS`](https://nodejs.org/en/download/)
 * [`Download Git`](https://git-scm.com/download/win)
 
 
