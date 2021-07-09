@@ -53,3 +53,8 @@ get bot token at [`@BotFather`](http://t.me/BotFather).
 * [`Doyatama Code (Guru)`](https://youtube.com/channel/UCctNhbMwbMs-5bdfuQv1aXg)
 * [`Rizky Fadilah`](https://wa.me/6282387804410)
 
+# Donate
+* [`Trakteer`](https://trakteer.id/rizkybot)
+* [`Pulsa`] (6285364937006)(Telkomsel)
+
+
