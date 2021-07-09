@@ -1,5 +1,5 @@
 //Base By Rizky Fadilah
-//creator Rizky Fadilah
+//creator/author Rizky Fadilah
 //thanks to ...gada yang bantu wkwk
 
 /**********Tq Udah make************/
