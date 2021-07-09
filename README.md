@@ -20,13 +20,12 @@
 ## Cloning this repo
 ```cmd
 > git clone https://github.com/Rizky878/bot-telegram
-> cd TelegramBot-NodeJS
+> cd bot-telegram
 ```
 
 ## Install the package
 ```cmd
-> npm i
-> npm i performance-now 
+> npm install
 ```
 
 ## Edit token bot
