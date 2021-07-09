@@ -3,10 +3,7 @@
 </p>
 
 
-# Telegram Bot
-
-# Installation
-
+#TELEGRAM BOT
 # Platform 
 ## Untuk Windows Instal Materi Tambahan Di Bawah Ini. Untuk Termux, cukup clone repo ini dan instal seperti contoh di bawah ini 
  
