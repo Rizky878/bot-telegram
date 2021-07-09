@@ -1,0 +1,32 @@
+{
+  "name": "bot-tele",
+  "version": "1.0.0",
+  "description": "no",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "bot-tele"
+  ],
+  "author": "Rizky Fadilah",
+  "license": "ISC",
+  "dependencies": {
+    "@vitalets/google-translate-api": "^7.0.0",
+    "cfonts": "^2.9.3",
+    "chalk": "^4.1.1",
+    "moment-timezone": "^0.5.33",
+    "nodemon": "^2.0.7",
+    "performance-now": "^2.1.0",
+    "ra-api": "^1.3.2",
+    "spinnies": "^0.5.1",
+    "telegraf": "^4.3.0",
+    "telegraf-update-logger": "^1.5.0",
+    "yt-search": "^2.9.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Rizky878"
+  }
+}
