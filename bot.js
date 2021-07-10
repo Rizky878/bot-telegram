@@ -897,7 +897,7 @@ default:
 if(!isGroup && !isCmd && !isMedia) {
 await iky.replyWithChatAction("typing")
 simi = await toJson(`https://fdciabdul.tech/api/ayla/?pesan=${q}`)
-await iky.reply(simi.jawab)
+await replyMenu(simi.jawab)
 console.log(chalk.whiteBright(""), chalk.cyanBright("[ SIMI ]"), chalk.whiteBright(q), chalk.greenBright("from"), chalk.whiteBright(user.username))
 console.log(chalk.whiteBright(""), chalk.cyanBright("[ BOT ]"), chalk.whiteBright(simi.jawab), chalk.greenBright("from"), chalk.whiteBright(user.username))
 }
