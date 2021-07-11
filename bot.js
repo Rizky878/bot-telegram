@@ -848,11 +848,11 @@ const isQuotedLocation = Quoted.hasOwnProperty("location")
 const isQuotedDocument = Quoted.hasOwnProperty("document")
 const isQuotedAnimation = Quoted.hasOwnProperty("animation")
 const isQuoted = iky.message.hasOwnProperty("reply_to_message")
-var qu = ""
+var file_id = ""
 if (isQuoted) {
-qu = isQuotedImage ? iky.message.reply_to_message.photo[iky.message.reply_to_message.photo.length - 1].qu : isQuotedVideo ? iky.message.reply_to_message.video.qu : isQuotedAudio ? iky.message.reply_to_message.audio.qu : isQuotedSticker ? iky.message.reply_to_message.sticker.qu :
-isQuotedDocument ? iky.message.reply_to_message.document.qu :
-isQuotedAnimation ? iky.message.reply_to_message.animation.qu : ""
+qu = isQuotedImage ? iky.reply_to_photo[iky.reply_to_photo.length - 1].file_id : isQuotedVideo ? iky.reply_to_video.file_id : isQuotedAudio ? iky.reply_to_audio.file_id : isQuotedSticker ? iky.reply_to_sticker.file_id :
+isQuotedDocument ? iky.reply_to_document.file_id :
+isQuotedAnimation ? iky.reply_to_animation.file_id : ""
 }
 const isCmd = q.startsWith(awalan)
 const isGroup = iky.chat.type.includes("group")
