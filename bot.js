@@ -5,7 +5,7 @@ const updateLogger = require('telegraf-update-logger');
 const chalk = require('chalk')
 const toMs = require('ms')
 const util = require('util')
-const afk = JSON.parse(fs.readFileSync('./afk.json'))
+const afk = JSON.parse(fs.readFileSync('./lib/afk.json'))
 const nekos = require('nekos.life')
 const neko = new nekos
 const _level = JSON.parse(fs.readFileSync('./level.json'))
@@ -13,7 +13,7 @@ let mate = [];
 const { 
 y2mateA,
 y2mateV
-} = require('./y2mate.js')
+} = require('./lib/y2mate.js')
 const yts = require('yt-search')
 const googleImage = require('g-i-s')
 const bot = new telebot({token: 'TOKEN MU'})
