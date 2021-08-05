@@ -4,6 +4,7 @@ const fs = require('fs')
 const updateLogger = require('telegraf-update-logger');
 const chalk = require('chalk')
 const toMs = require('ms')
+let Bot_Token = 'TOKEN MU'
 const util = require('util')
 const afk = JSON.parse(fs.readFileSync('./lib/afk.json'))
 const nekos = require('nekos.life')
@@ -16,7 +17,7 @@ y2mateV
 } = require('./lib/y2mate.js')
 const yts = require('yt-search')
 const googleImage = require('g-i-s')
-const bot = new telebot({token: 'TOKEN MU'})
+const bot = new telebot({token: Bot_Token})
 const toJson = (url, options) => new Promise(async (resolve, reject) => {
 fetch(url, options)
 .then(response => response.json())
