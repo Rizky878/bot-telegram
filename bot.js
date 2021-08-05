@@ -1,767 +1,443 @@
-//Base By Rizky Fadilah
-//creator/author Rizky Fadilah
-//thanks to ...gada yang bantu wkwk
-
-/**********Tq Udah make************/
-
-const { Telegraf } = require('telegraf')
-const fetch = require('node-fetch')
-const moment = require('moment-timezone')
-const os = require('os')
-const speed = require(`performance-now`);
-const RA = require('ra-api')
-const chalk = require('chalk')
-const spin = require('spinnies')
-const cfonts = require('cfonts')
+const telebot = require('telebot')
+const fetch = require ('node-fetch')
 const fs = require('fs')
-const Bot_Token = 'TOKEN BOT'//Example '18009294047:AAhhsEMxPgAGoKaoJs21gW92B0KOHOi0kdksJs'
-const util = require('util')
-const transllate = require('@vitalets/google-translate-api')
-const afk = JSON.parse(fs.readFileSync('./lib/afk.json'))
 const updateLogger = require('telegraf-update-logger');
-const banner = cfonts.render(('Rizky Fadilah|Bot Telegram'), {
-font: 'chrome',
-color: 'candy',
-align: 'center',
-gradient: ["red","green"],
-lineHeight: 3
-});
-const success = (id, text) => {
-spins.succeed(id, {text: text})
-}
-const spinner = { 
-"interval": 120,
-"frames": [
-"🕐",
-"🕑",
-"🕒",
-"🕓",
-"🕔",
-"🕕",
-"🕖",
-"🕗",
-"🕘",
-"🕙",
-"🕚",
-"🕛"
-]}
-let globalSpinner;
-const getGlobalSpinner = (disableSpins = false) => {
-if(!globalSpinner) globalSpinner = new spin({ color: 'blue', succeedColor: 'green', spinner, disableSpins});
-return globalSpinner;
-}
-spins = getGlobalSpinner(false)
-const Sukses = (id, text) => {
-spins.add(id, {text: text})
-}
+const chalk = require('chalk')
+const toMs = require('ms')
+const util = require('util')
+const afk = JSON.parse(fs.readFileSync('./afk.json'))
+const nekos = require('nekos.life')
+const neko = new nekos
+const _level = JSON.parse(fs.readFileSync('./level.json'))
+let mate = [];
 const { 
 y2mateA,
 y2mateV
-} = require('./lib/y2mate.js')
+} = require('./y2mate.js')
 const yts = require('yt-search')
+const googleImage = require('g-i-s')
+const bot = new telebot({token: 'TOKEN MU'})
 const toJson = (url, options) => new Promise(async (resolve, reject) => {
 fetch(url, options)
 .then(response => response.json())
 .then(json => {
-// console.log(json)
 resolve(json)
 })
 .catch((err) => {
 reject(err)
 })
 })
+function randomNomor(angka){
+return Math.floor(Math.random() * angka) + 1
+}
+const getBuffer = async(url, options) => {
+try {
+options ? options : {}
+tesa = await fetch(url, options)
+bre = await tesa.buffer()
+return bre
+} catch (e) {
+console.log(`Error : ${e}`)
+}
+}
+const addLevelingId = (senderId) => {
+const obj = {jid: senderId, xp: 1, level: 1}
+_level.push(obj)
+fs.writeFileSync('./level.json', JSON.stringify(_level))
+}
+const getLevelingXp = (senderId) => {
+let position = false
+Object.keys(_level).forEach((i) => {
+if (_level[i].jid === senderId) {
+position = i
+}
+})
+if (position !== false) {
+return _level[position].xp
+}
+}
+const getLevelingLevel = (senderId) => {
+let position = false
+Object.keys(_level).forEach((i) => {
+if (_level[i].jid === senderId) {
+position = i
+}
+})
+if (position !== false) {
+return _level[position].level
+}
+}
+
+const getLevelingId = (senderId) => {
+let position = false
+Object.keys(_level).forEach((i) => {
+if (_level[i].jid === senderId) {
+position = i
+}
+})
+if (position !== false) {
+return _level[position].jid
+}
+}
+const addLevelXp = (sender, amount) => {
+let position = false
+Object.keys(_level).forEach((i) => {
+ if (_level[i].jid === sender) {
+position = i
+ }
+})
+if (position !== false) {
+ _level[position].xp += amount
+ fs.writeFileSync('./level.json', JSON.stringify(_level))
+}
+}
+const addLevelingXp = (senderId, amount) => {
+let position = false
+Object.keys(_level).forEach((i) => {
+ if (_level[i].jid === senderId) {
+position = i
+ }
+})
+if (position !== false) {
+ _level[position].xp += amount
+ fs.writeFileSync('./level.json', JSON.stringify(_level))
+}
+}
+const addLevelingLevel = (senderId, amount) => {
+let position = false
+Object.keys(_level).forEach((i) => {
+if (_level[i].jid === senderId) {
+position = i
+}
+})
+if (position !== false) {
+_level[position].level += amount
+fs.writeFileSync('./level.json', JSON.stringify(_level))
+}
+}
 const isUrl = (url) => {
 return url.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/, 'gi'))
 }
-function range(start, stop, step) {
- if (typeof stop == 'undefined') {
-// one param defined
-stop = start;
-start = 0;
- }
- if (typeof step == 'undefined') {
-step = 1;
- }
- if ((step > 0 && start >= stop) || (step < 0 && start <= stop)) {
-return [];
- }
- var result = [];
- for (var i = start; step > 0 ? i < stop : i > stop; i += step) {
-result.push(i);
- }
- return result;
+const addMtk = (chatId, jawaban, expired, _db) => {
+let obi = { id: chatId, jawaban: jawaban, expired: Date.now() + toMs(`${expired}s`) }
+_db.push(obi)
 }
-const argsGet = async(iky) => {
+const getJawabanMtk = (chatId, _db) => {
+let found = false
+Object.keys(_db).forEach((i) => {
+if (_db[i].id === chatId) {
+found = i
+}
+})
+if (found !== false) {
+return _db[found].jawaban
+}
+}
+const isMtk = (chatId, _db) => {
+let status = false
+Object.keys(_db).forEach((i) => {
+if (_db[i].id === chatId) {
+status = true
+}
+})
+return status
+}
+const getMtkPosi = (chatId, _db) => {
+let position = null
+Object.keys(_db).forEach((i) => {
+if (_db[i].id === chatId) {
+position = i
+}
+})
+if (position !== null) {
+return position
+}
+}
+const cekWaktuMtk = (_dir) => {
+setInterval(() => {
+let position = null
+Object.keys(_dir).forEach((i) => {
+if (Date.now() >= _dir[i].expired) {
+position = i
+}
+})
+if (position !== null) {
+bot.sendMessage(_dir[position].id, `*Waktu habis*\n\n*Jawaban :* ${_dir[position].jawaban}`)
+_dir.splice(position, 1)
+}
+}, 1000)
+}
+bot.on(['photo','video','text','sticker','document','contact','audio','location'],async(iky) => {
+const OwnerId = ['Rizky9788']
+awalan = '/'
+const reply = async(text) => {
+iky.reply.text(text,{ asReply: true })}
+const budy = iky.text || iky.caption || ''
+ comm = budy.trim().split(" ").shift().toLowerCase()
+cmd = false
+        if (awalan != "" && budy.startsWith(awalan)) {
+            cmd = true
+            comm = budy.slice(1).trim().split(" ").shift().toLowerCase()
+        }
+const command = comm
+const args = budy.trim().split(/ +/).slice(1)
+const q = args.join(' ')
+const from = iky.chat.id
+const sender = iky.from.username
+const isOwner = false
+const isGroup = iky.chat.type.includes("group")
+const groupName = isGroup ? iky.chat.title : ""
+const isImage = iky.hasOwnProperty("photo")
+const isVideo = iky.hasOwnProperty("video")
+const isAudio = iky.hasOwnProperty("audio")
+const isSticker = iky.hasOwnProperty("sticker")
+const isContact = iky.hasOwnProperty("contact")
+const isLocation = iky.hasOwnProperty("location")
+const isDocument = iky.hasOwnProperty("document")
+const isAnimation = iky.hasOwnProperty("animation")
+const isMedia = isImage || isVideo || isAudio || isSticker || isContact || isLocation || isDocument || isAnimation
+const Quoted = iky.reply_to_message || {}
+const isQuotedImage = Quoted.hasOwnProperty("photo")
+const isQuotedVideo = Quoted.hasOwnProperty("video")
+const isQuotedAudio = Quoted.hasOwnProperty("audio")
+const isQuotedSticker = Quoted.hasOwnProperty("sticker")
+const isQuotedContact = Quoted.hasOwnProperty("contact")
+const isQuotedLocation = Quoted.hasOwnProperty("location")
+const isQuotedDocument = Quoted.hasOwnProperty("document")
+const isQuotedAnimation = Quoted.hasOwnProperty("animation")
+const isQuoted = iky.hasOwnProperty("reply_to_message")
+const levelRole = getLevelingLevel(sender)
+cekWaktuMtk(mate)
+var role = 'Copper V'
+if (levelRole >= 5) {
+role = 'Copper IV'
+} else if (levelRole >= 10) {
+role = 'Copper III'
+} else if (levelRole >= 15) {
+role = 'Copper II'
+} else if (levelRole >= 20) {
+role = 'Copper I'
+} else if (levelRole >= 25) {
+role = 'Silver V'
+} else if (levelRole >= 30) {
+role = 'Silver IV'
+} else if (levelRole >= 35) {
+role = 'Silver III'
+} else if (levelRole >= 40) {
+role = 'Silver II'
+} else if (levelRole >= 45) {
+role = 'Silver I'
+} else if (levelRole >= 50) {
+role = 'Gold V'
+} else if (levelRole >= 55) {
+role = 'Gold IV'
+} else if (levelRole >= 60) {
+role = 'Gold III'
+} else if (levelRole >= 65) {
+role = 'Gold II'
+} else if (levelRole >= 70) {
+role = 'Gold I'
+} else if (levelRole >= 75) {
+role = 'Platinum V'
+} else if (levelRole >= 80) {
+role = 'Platinum IV'
+} else if (levelRole >= 85) {
+role = 'Platinum III'
+} else if (levelRole >= 90) {
+role = 'Platinum II'
+} else if (levelRole >= 95) {
+role = 'Platinum I'
+} else if (levelRole > 100) {
+role = 'Exterminator'
+}
+var file_id = ""
+if (isQuoted) {
+file_id = isQuotedImage ? iky.reply_to_message.photo[0].file_id : isQuotedVideo ? iky.reply_to_message.video[0].file_id : isQuotedAudio ? iky.reply_to_message.audio[0].file_id : isQuotedSticker ? iky.reply_to_message.sticker[0].file_id :
+isQuotedDocument ? iky.reply_to_message.document[0].file_id :
+isQuotedAnimation ? iky.reply_to_message.animation[0].file_id : ""
+}
+var mediaLink = file_id ? await bot.getFile(file_id) : ""
+var limk = file_id ? mediaLink.fileLink : ""
+var typeMessage = budy.substr(0, 50).replace(/\n/g, '')
+if (isImage) typeMessage = "Image"
+else if (isVideo) typeMessage = "Video"
+else if (isAudio) typeMessage = "Audio"
+else if (isSticker) typeMessage = "Sticker"
+else if (isContact) typeMessage = "Contact"
+else if (isLocation) typeMessage = "Location"
+else if (isDocument) typeMessage = "Document"
+else if (isAnimation) typeMessage = "Animation"
+const isCmd = cmd
+if (!isGroup && !isCmd) console.log(chalk.whiteBright("-"), chalk.cyanBright("[ PRIVATE ]"), chalk.whiteBright(typeMessage), chalk.greenBright("from"), chalk.whiteBright(sender))
+if (isGroup && !isCmd) console.log(chalk.whiteBright("-"), chalk.cyanBright("[GROUP]"), chalk.whiteBright(typeMessage), chalk.greenBright("from"), chalk.whiteBright(sender), chalk.greenBright("in"), chalk.whiteBright(groupName))
+if (!isGroup && isCmd) console.log(chalk.whiteBright("-"), chalk.cyanBright("[ COMMAND ]"), chalk.whiteBright(typeMessage), chalk.greenBright("from"), chalk.whiteBright(sender))
+if (isGroup && isCmd) console.log(chalk.whiteBright("-"), chalk.cyanBright("[ COMMAND ]"), chalk.whiteBright(typeMessage), chalk.greenBright("from"), chalk.whiteBright(sender), chalk.greenBright("in"), chalk.whiteBright(groupName))
+if (isMtk(from, mate)){
+if (budy.toLowerCase().includes(getJawabanMtk(from, mate))){
+var htgm = randomNomor(2000)
+await reply(`Yeyy jawaban kamu benar\nJawaban : ${getJawabanMtk(from, mate)}\n\nIngin bermain lagi? kirim /mtk`)
+mate.splice(getMtkPosi(from, mate), 1)
+} 
+}
+if (isGroup && !isCmd) {
+const currentLevel = getLevelingLevel(sender)
+const checkId = getLevelingId(sender)
 try {
-args = iky.message.text
-args = args.split(" ")
-args.shift()
-return args
-} catch { return [] }
+if (currentLevel === undefined && checkId === undefined) addLevelingId(sender)
+const amountXp = Math.floor(Math.random() * 10) + 50
+const requiredXp = 200 * (Math.pow(2, currentLevel) - 1)
+const getLevel = getLevelingLevel(sender)
+addLevelingXp(sender, amountXp)
+if (requiredXp <= getLevelingXp(sender)) {
+addLevelingLevel(sender, 1)
+ await reply(`Selamat Kamu Naik Level\nName: ${sender}\nLevel: ${getLevel} -> ${getLevelingLevel(sender)}\nXP: ${getLevelingXp(sender)} / ${requiredXp}\nRole: ${role}\n\nCongrats!!🥳🥳`)
 }
-const LinkGet = async(file_id) => { try { return (await bot.telegram.getFileLink(file_id)).href } catch { throw "Error while get url" } }
-const GetFotoProfile = async(id) => {
- try {
-is = "https://telegra.ph/file/4ab397f49255b2a79f687.jpg"
-if (String(id).startsWith("-100")) {
-var pp = await bot.telegram.getChat(id)
-if (!pp.hasOwnProperty("photo")) return is
-ids = pp.photo.big_file_id
-} else {
-var pp = await bot.telegram.getUserProfilePhotos(id)
-if (pp.total_count == 0) return is
-ids = pp.photos[0][2].file_id
+} catch (err) {
+console.error(err)
 }
-return await LinkGet(ids)
- } catch (e) { throw e }
 }
-const pushname = (ctx) => {
- try {
-user = ctx
-last_name = user["last_name"] || ""
-full_name = user.first_name + " " + last_name
-user["full_name"] = full_name.trim()
-return user
- } catch (e) { throw e }
+if (afk.includes(budy)) {
+ini_txt = "Maaf sender yang anda tag sedang afk. "
+reply(ini_txt)
+return
 }
-const d = new Date(new Date + 3600000)
-const locale = 'id'
-const gmt = new Date(0).getTime() - new Date('1 January 1970').getTime()
- const weton = ['Pahing', 'Pon', 'Wage', 'Kliwon', 'Legi'][Math.floor(d / 84600000) % 5]
- const week = d.toLocaleDateString(locale, { weekday: 'long' })
- const date = d.toLocaleDateString(locale, {
-day: 'numeric',
-month: 'long',
-year: 'numeric'
-})
-const waktu = d.toLocaleTimeString(locale, {
-hour: 'numeric',
-minute: 'numeric',
-second: 'numeric'
-})
-if (Bot_Token == "TOKEN BOT") {
-console.log(chalk.cyanBright("################### TOKEN BOT KOSONG ###################"))
-return console.log(chalk.cyanBright("################### TOKEN BOT KOSONG ###################"))
+if (afk.includes('@'+sender)) {
+reply("Anda telah keluar dari mode afk.")
+afs = afk.indexOf('@'+sender)
+afk.splice(afs,1)
+fs.writeFileSync("./afk.json", JSON.stringify(afk))
+return
 }
-const bot = new Telegraf(Bot_Token)
-bot.on("new_chat_members", async(iky) => {
- var message = iky.message
- var groupname = message.chat.title
- var groupmembers = await bot.telegram.getChatMembersCount(message.chat.id)
- for (x of message.new_chat_members) {
-var pp_user = await GetFotoProfile(x.id)
-var full_name = pushname(x).full_name
-console.log(chalk.whiteBright("Rizky Bot"), chalk.cyanBright("[JOINS]"), chalk.whiteBright(full_name), chalk.greenBright("join in"), chalk.whiteBright(groupname))
-await iky.replyWithPhoto({ url: pp_user},{caption: `Selamat datang ${full_name}
-di group ${groupname}`, parse_mode: "Markdown" })
- }
-})
-bot.on("left_chat_member", async(iky) => {
- var message = iky.message
- var groupname = message.chat.title
- var groupmembers = await bot.telegram.getChatMembersCount(message.chat.id)
- var pp_user = await GetFotoProfile(message.left_chat_member.id)
- var full_name = pushname(message.left_chat_member).full_name
- console.log(chalk.whiteBright("Rizky Bot"), chalk.cyanBright("[LEAVE]"), chalk.whiteBright(full_name), chalk.greenBright("leave from"), chalk.whiteBright(groupname))
- await iky.replyWithPhoto({ url: `${pp_user}` }, {caption: `GoodBye ${full_name}`, parse_mode: "Markdown" })
- })
-bot.use(
-updateLogger({
-colors: {
-id: chalk.red,
-chat: chalk.yellow,
-user: chalk.green,
-type: chalk.bold,
-},
-}),
-);
-console.log(banner.string)
-Sukses('2', 'Connecting...')
-setTimeout( () => {
-success('2', 'Connected')
-console.log(chalk.whiteBright('[ BOT STARTED ]'))
-}, 3000)
-function sendProses(ctx){
-// let chatId = msg.chat.id;
-let botReply = "Wait, Proses"
-bot.telegram.sendMessage(ctx.chat.id ,botReply)
-.then((result) => { setTimeout(() => {
-bot.telegram.deleteMessage(ctx.chat.id, result.message_id)
-}, 10 *500)})
-.catch(err => console.log(err))
-}
- function format(seconds){
-function pad(s){
-return (s < 10 ? `0` : ``) + s;
-}
-var hours = Math.floor(seconds / (60*60));
-var minutes = Math.floor(seconds % (60*60) / 60);
-var seconds = Math.floor(seconds % 60);
-return pad(hours) + ` H,` + pad(minutes) + ` M,` + pad(seconds) + ` S`;
- }
-var uptime = process.uptime();
- const timestamp = speed();
- const latensi = speed() - timestamp
- const tutid = moment().millisecond()
- 
-function sendText(ctx,teks){
-bot.telegram.sendMessage(ctx.chat.id, teks,
- {
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Back', callback_data: 'start'}
- ]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
- })
- }
- function sendsearch(ctx){
- // let chatId = msg.chat.id;
- let botReply = "Bentar Proses"
- bot.telegram.sendMessage(ctx.chat.id ,botReply)
-.then((result) => { setTimeout(() => {
-bot.telegram.deleteMessage(ctx.chat.id, result.message_id)
-}, 10 *250)})
-.catch(err => console.log(err))
- }
-function sendDonation(ctx){
- bot.telegram.sendMessage(ctx.chat.id, `• DANA
-⤷ 6285364937006
-
-• Telkomsel Credit
-⤷ 6285364937006
-
-Very Thanks for Your donation. 😁`,
-{
-reply_markup: {
-inline_keyboard: [
-[
-{ text: 'Back!🔙', callback_data: 'start'},
-{ text: 'Owner', url: 'http://t.me/Rizky9788'}
-]
-]
-},
-parse_mode: "Markdown"
-})
-}
-const sendHelp = async(ctx) => {
-bot.telegram.sendMessage(ctx.chat.id, 'Selamat datang Silahkan pilih menu dibawah',{
-reply_markup: {
-inline_keyboard: [
-[
-{ text: 'Pinterest', callback_data: 'pinterest'},
-{ text: 'Loli', callback_data: 'loli'},
-{ text: 'Music', callback_data: 'play'},
-{ text: 'Quotes', callback_data: 'quotes'},
-{ text: 'Afk', callback_data: 'afk'},
-{ text: 'Owner', callback_data: 'rizky'}
-],
-[
-{ text: 'Donasi👼🏻', callback_data: 'donasi'},
-{ text: 'Ping🚀', callback_data: 'ping'},
-{ text: 'Info Bot🤖', callback_data: 'info'}
-],
-[
-{ text: 'Youtube convert to music', callback_data: 'ytmp3'}
-],
-[
-{ text: 'Youtube convert to video', callback_data: 'ytmp4'}
-],
-[
-{ text: 'Youtube Search', callback_data: 'ytsearch'}
-],
-[
-{ text: 'Instagram Downloader', callback_data: 'ig'}
-]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
-})
-}
-const sendStart = async(ctx) => {
-var pp_user = await GetFotoProfile(ctx.from.id || ctx.chat.id)
-ctx.replyWithPhoto({url: `${pp_user}`},
-{
-caption:'Silahkan pilih menu dibawah',
-reply_markup: {
-inline_keyboard: [
-[
-{ text: 'Donasi👼🏻', callback_data: 'donasi'},
-{ text: 'Menu📚', callback_data: 'menu'},
-{ text: 'Ping🚀', callback_data: 'ping'},
-{ text: 'Info Bot🤖', callback_data: 'info'}
-],
-[
-{ text: 'WhatsApp Bot🤖', url: 'wa.me/6282255123081'},
-]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
-})
-}
-function sendTest(ctx){
-ctx.replyWithPhoto({url: `https://telegra.ph/file/4ab397f49255b2a79f687.jpg`},
-{
-caption: 'hai',
-reply_markup: {
-inline_keyboard: [
-[
-{ text: 'Donasi👼🏻', callback_data: 'donasi'},
-{ text: 'Menu📚', callback_data: 'menu'},
-{ text: 'Ping🚀', callback_data: 'ping'},
-{ text: 'Info Bot🤖', callback_data: 'info'}
-],
-[
-{ text: 'WhatsApp Bot🤖', url: 'wa.me/6282255123081'},
-]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
-})
-}
-bot.action('info', ctx =>{
-ctx.deleteMessage()
-bot.telegram.sendMessage(ctx.chat.id, "Bot Info", {
-reply_markup: {
-keyboard: [
-[
-{text: "Creator",callback_data: 'credit'},
-{text: "Source",callback_data: 'script'}
-],
-[
-{text: "Hilangkan keyboard"}
-]
-],
-resize_keyboard: true
-}
-})
-})
-
-bot.hears('Creator', ctx => {
-bot.telegram.sendMessage(ctx.chat.id, 'Bot ini dibuat oleh @Rizky9788 / Rizky Fadilah',{
-reply_markup: {
-inline_keyboard:[
-[
-{ text: 'Back!', callback_data: 'start'}
-]
-]
-},
-parse_mode: "Markdown"
- })
-});
-bot.hears('Source', ctx => {
-bot.telegram.sendMessage(ctx.chat.id,'Source: https://github.com/Rizky878/bot-telegram',{
-reply_markup: {
-inline_keyboard:[
-[
-{ text: 'Back!', callback_data: 'start'}
-]
-]
-},
-parse_mode: "Markdown"
- })
-});
-
-bot.hears('Hilangkan keyboard', ctx => {
-bot.telegram.sendMessage(ctx.chat.id, "Keyboard dihilangkan", 
-{
-reply_markup: {
-remove_keyboard: true
-}
-})
-})
-bot.action('afk',(ctx) => {
-ctx.deleteMessage()
-if(ctx.chat.type.includes("group")) {
-bot.telegram.sendMessage(ctx.chat.id, 'Perintah ini hanya dapat digunakan dalam chat pribadi',{
-reply_markup: {
-inline_keyboard:[
-[
-{ text: 'Back!', callback_data: 'start'}
-]
-]
-},
-parse_mode: "Markdown"
- })
- return
- }
-afk.push('@'+pushname(ctx.from).username)
-fs.writeFileSync('./afk.json', JSON.stringify(afk))
-console.log('@'+pushname(ctx.from).username)
-ini_txt = "Anda telah afk. \nJika ada yang tag kamu bot akan memberitahukan bahwa kamu off\nJika ingin kembali dari afk ketik hai di sini"
-ctx.reply(ini_txt)
-})
-bot.action('ping', (ctx) => {
-ctx.deleteMessage()
-const tmenu = ` 
-
-�    
-  *Host* : _${os.hostname()}_
-  *Platfrom* : _${os.platform()}_
-  *Penggunaan RAM* : _${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB / ${Math.round(require(`os`).totalmem / 1024 / 1024)}MB_
- 
-  Ping : *${tutid}MS*
-  Runtime : *${format(uptime)}*
-  _Speed_*${latensi.toFixed(4)}* _Second_
-
- ` 
-bot.telegram.sendMessage(ctx.chat.id, tmenu ,
-{
-reply_markup: {
-inline_keyboard:[
-[
-{ text: 'Back!', callback_data: 'start'}
-]
-]
-},
-parse_mode: "Markdown"
- })
-})
-bot.action('pinterest', ctx => {
-ctx.deleteMessage()
- bot.telegram.sendMessage(ctx.chat.id, 'Silahkan ketik /pinterest nama foto \ncontoh: /pinterest ayam',
- {
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Back', callback_data: 'start'}
- ]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
- })
-})
-bot.action('ytmp3', ctx => {
-ctx.deleteMessage()
- bot.telegram.sendMessage(ctx.chat.id, 'Silahkan ketik /ytmp3 link YouTube \ncontoh: /ytmp3 https://youtu.be/ST5v7-C3iDk ',
- {
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Back', callback_data: 'start'}
- ]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
- })
-})
-bot.action('ytmp4', ctx => {
-ctx.deleteMessage()
- bot.telegram.sendMessage(ctx.chat.id, 'Silahkan ketik /ytmp4 link YouTube \ncontoh: /ytmp4 https://youtu.be/ST5v7-C3iDk',
- {
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Back', callback_data: 'start'}
- ]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
- })
-})
-bot.action('ytsearch', ctx => {
-ctx.deleteMessage()
- bot.telegram.sendMessage(ctx.chat.id, 'Silahkan ketik /ytsearch judul \ncontoh: /ytsearch ayam ',
- {
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Back', callback_data: 'start'}
- ]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
- })
-})
-bot.action('play', ctx => {
-ctx.deleteMessage()
- bot.telegram.sendMessage(ctx.chat.id, 'Silahkan ketik /play nama lagu \ncontoh: /play surat cinta untuk starla ',
- {
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Back', callback_data: 'start'}
- ]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
- })
-})
-bot.action('ig', ctx => {
-ctx.deleteMessage()
- bot.telegram.sendMessage(ctx.chat.id, 'Silahkan ketik /instagram link \ncontoh: /instagram https://www.instagram.com/p/CREqfvJirTd/?utmmedium=copylink ',
- {
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Back', callback_data: 'start'}
- ]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
- })
-})
-bot.action('loli', (ctx) => {
-ctx.deleteMessage()
-ctx.reply('mencari')
- toJson(`https://api.zeks.xyz/api/pinimg?apikey=yukinikokurumi21&q=loli`).then((res) =>{
- json = res.data
- pa = Math.floor(Math.random() * json.length)
- paq = json[pa]
- console.log(paq)
- ctx.replyWithPhoto({
-url: paq,
-filename: 'kitten.jpg'
-})
-console.log(res)}).catch(e => console.log(e))
-})
-bot.action('rizky', ctx => {
-ctx.deleteMessage()
-bot.telegram.sendMessage(ctx.chat.id, '@Rizky9788 itu ownerku',
-{
-reply_markup: {
-inline_keyboard: [
-[
-{ text: 'Back', callback_data: 'start'}
-]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
-})
- 
-})
-bot.action('donasi', (ctx) =>{
-ctx.deleteMessage()
-sendDonation(ctx)
-})
-bot.action('start', async(ctx) =>{
-ctx.deleteMessage()
-sendHelp(ctx)
-})
-bot.action('quotes', async(ctx) =>{
-ctx.deleteMessage()
-sendsearch(ctx)
-buff = await toJson('http://yerkee.com/api/fortune')
-transllate(buff.fortune, {to: 'id'}).then(res => {
-bot.telegram.sendMessage(ctx.chat.id, res.text,
- {
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Back', callback_data: 'start'}
- ]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
- })
-console.log(res)
-}).catch(err => {
-sendText(ctx,`ERROR | ${err}`);
-});
-
-	})
-bot.action(['help','menu'], (ctx) =>{
-ctx.deleteMessage()
-sendHelp(ctx)
-})
-bot.start(async(ctx) => {
-ctx.deleteMessage()
-sendStart(ctx)
-})
-bot.help((ctx) => {
-ctx.deleteMessage()
-sendHelp(ctx)
-})
-bot.command('loli', (ctx) => {
-ctx.reply('mencari')
-toJson(`https://api.zeks.xyz/api/pinimg?apikey=yukinikokurumi21&q=loli`).then((res) =>{
-json = res.data
-pa = Math.floor(Math.random() * json.length)
-paq = json[pa]
-console.log(paq)
-ctx.replyWithPhoto({
-url: paq,
-filename: 'kitten.jpg' })
-console.log(res)}).catch(e => console.log(e))
-})
-
-bot.command('ping', (ctx) => {
-const tmenu = ` 
-
-   
-  *Host* : _${os.hostname()}_
-  *Platfrom* : _${os.platform()}_
-  *Penggunaan RAM* : _${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)}MB / ${Math.round(require(`os`).totalmem / 1024 / 1024)}MB_
- 
-  Ping : *${tutid}MS*
-  Runtime : *${format(uptime)}*
-  _Speed_*${latensi.toFixed(4)}* _Second_
-
- ` 
-bot.telegram.sendMessage(ctx.chat.id, tmenu ,
-{
-reply_markup: {
-inline_keyboard:[
-[
-{ text: 'Back!', callback_data: 'start'}
-]
-]
-},
-parse_mode: "Markdown"
-})
-})
-bot.command(['instagram','Instagram'], async(iky) => {
-let input = iky.message.text
-let inputArray = input.split(" ")
-let message = "";
-if(inputArray.length == 1){
-message = "Please enter link, for example: /instagram https://www.instagram.com/p/CREqfvJirTd/?utm_medium=copy_link"
-sendText(iky,message)
-} else{
-sendProses(iky)
-inputArray.shift();
-messager = inputArray.join(" ")
-teks = messager
-console.log(teks)
-if(!isUrl(teks) && !teks.includes('instag')) return sendText(iky,'Link Invalid')
+switch (command) {
+case 'start':
+reply(`Welcome bang kalo ada yang error lapor owner ya @Rizky9788
+ketik /help untuk melihat menu`)
+break
+case 'pussy':
+case 'lesbian':
+case 'kuni':
+case 'cumsluts':
+case 'classic':
+case 'boobs':
+case 'anal':
+case 'avatar':
+case 'yuri':
+case 'trap':
+case 'tits':
+case 'kitsune':
+case 'keta':
+case 'holo':
+case 'hentai':
+case 'futanari':
+case 'femdom':
+case 'feet':
+case 'ero':
+case 'spank':
+case 'gasm':
+case 'hentai':
 try {
-const insta = await toJson(`https://api.zeks.xyz/api/ig?apikey=yukinikokurumi21&url=${teks}`)
-for (let i of insta.result) {
-if(i.type == 'jpg') {
-iky.replyWithChatAction("upload_photo")
-iky.replyWithPhoto({
-url: i.url,
-filename: insta.owner
-})
-} else {
-iky.replyWithChatAction("upload_video")
-iky.replyWithVideo({
-url: i.url,
-filename: insta.owner
-})
+if(command == 'hentai') {
+var coo = 'randomHentaiGif'
+iky.reply.photo((await neko['nsfw'][coo]()).url, {caption: coo})
+return 
 }
-sendText(iky,`Download Selesai`)
-}
-}catch(e){
-console.log(e)
-sendText(iky,`Error/Link Invalid`)
-}
-}
-})
-bot.command('ytsearch', async (ctx) => {
-let input = ctx.message.text
-let inputArray = input.split(" ")
-let message = "";
-if(inputArray.length == 1){
-message = "Please enter text, for example: /ytsearch snowman"
-ctx.reply(message)
-} else{
-sendProses(ctx)
-inputArray.shift();
-messager = inputArray.join(" ")
-teks = messager
-try {
-res = await yts(`${teks}`)
-for (let i = 0; i < 5; i++) {
-ctx.replyWithPhoto({url: res.all[i].thumbnail}, {caption:`❒「Yt Search」
-• Judul${res.all[i].title}
-• ID Video${res.all[i].videoId}
-• Views${res.all[i].views}
-• Di Upload Pada${res.all[i].ago}
-• Durasi${res.all[i].timestamp}
-• Channel${res.all[i].author.name}
-• Link Channel : ${res.all[i].author.url}
-• Link Video : ${res.all[i].url}
-`})
-}
+var coo = command
+iky.reply.photo((await neko['nsfw'][coo]()).url, {caption: coo})
 } catch {
-ctx.reply(`Pastikan judul sudah benar!`)
+reply ('error')
+}
+break
+case 'level':
+const senderLevel = getLevelingLevel(sender)
+ const rea = 200 * (Math.pow(2, getLevelingLevel(sender)) - 1)
+ const senderXp = `${getLevelingXp(sender)} / ${rea}`
+ if (senderLevel === undefined && senderXp === undefined) return reply('kamu belum memiliki level')
+ welpoep = `Level : ${senderLevel}
+XP : ${senderXp} (${Math.floor(getLevelingXp(sender) - rea)} Xp Lagi untuk level up)
+Role : ${role}`
+reply(welpoep)
+break
+case 'tes':
+console.log(file_id)
+console.log(limk)
+break
+case 'help': case 'menu':
+reply(`Telegram Bot
+
+Others:
+/playmp3 <judul lagu>
+/playmp4 <judul video>
+/image <nama foto>
+/sticker <reply gambar>
+/level
+/mtk
+/afk
+
+Fitur Nsfw:
+/pussy
+/lesbian
+/kuni
+/cumsluts
+/classic
+/boobs
+/anal
+/avatar
+/yuri
+/trap
+/tits
+/kitsune
+/keta
+/holo
+/hentai
+/futanari
+/femdom
+/feet
+/ero
+/spank
+/gasm
+/hentai
+
+By Rzky`)
+break
+case 'mtk':
+if (isMtk(from, mate)) return reply(`Masih ada soal yang belum di selesaikan`)
+const alp = Math.floor(Math.random() * 150)
+ const akud = Math.floor(Math.random() * 150)
+const msa = require('mathjs')
+const bly = ['*','+','*','-','/']
+const blw = bly[Math.floor(Math.random() * bly.length)]
+const mash = alp+blw+akud
+const jwb = mash
+const jamet = `${msa.evaluate(jwb)}`
+addMtk(from,jamet,70,mate)
+console.log(`${jamet}\n${jamet}`)
+reply(`「 MTK 」\n\nSoal\n${alp} ${blw} ${akud} = ....\nPenjelasan:\n * = kali\n / = bagi\n+ = tambah\n- = kurang\n\nWaktu: 70 detik`)
+break
+case 'image':
+if (args.length < 1) return reply('Gambar apa?\ncontoh: /image loli')
+re = await iky.reply.text('Mohon Tunggu',{ asReply: true })
+teks = args.join(' ')
+res = await googleImage(teks, google)
+function google(error, result){
+if (error){ return reply('[ ❗ ] Error Terjari Kesalahan Atau Hasil Tidak Ditemukan')}
+else {
+var gugIm = result
+var random = gugIm[Math.floor(Math.random() * gugIm.length)].url
+iky.reply.photo(random,{caption: `Hasil Pencarian: ${q.toUpperCase()}`}).catch(e => reply('err'))
+bot.deleteMessage(iky.chat.id, re.message_id)
 }
 }
-})
-bot.command('quotes', async(ctx) => {
-ctx.deleteMessage()
-sendsearch(ctx)
-buff = await toJson('http://yerkee.com/api/fortune')
-transllate(buff.fortune, {to: 'id'}).then(res => {
-bot.telegram.sendMessage(ctx.chat.id, res.text,{
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Back', callback_data: 'start'}
-]
-]
-},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" 
-})
-console.log(res)
-}).catch(err => {
-sendText(ctx,`ERROR | ${err}`);
-});
-})
-bot.command('ytmp3', ctx => {
-if(ctx.message.text.split('ytmp3')[1] == '') return ctx.reply('Link nya mana kak?')
-const q = ctx.message.text.split('ytmp3')[1]
-if(!isUrl(q) && !q.includes('youtu')) return ctx.reply('Link Invalid')
-sendsearch(ctx)
-y2mateA(q).then((tes) => {
-console.log(tes)
-ctx.replyWithChatAction("upload_photo")
-ctx.replyWithPhoto({
-url: tes[0].thumb,
-filename: tes[0].judul+'.jpg'
-},{caption: `*「 YOUTUBE MP3 」*\n\n• *Judul* : ${tes[0].judul}\n• *Size* : ${tes[0].size}\n\nMohon Tunggu sebentar lagu sedang dikirim`})
-ctx.replyWithAudio({
-url: tes[0].link,
-filename: tes[0].output
-}).catch(e => { ctx.reply('Link Invalid')
-console.log(e)
-})
-ctx.replyWithChatAction("upload_audio")
-})
-})
-bot.command('ytmp4', ctx => {
-if(ctx.message.text.split('ytmp4')[1] == '') return ctx.reply('Link nya mana kak?')
-const q = ctx.message.text.split('ytmp4')[1]
-if(!isUrl(q) && !q.includes('youtu')) return ctx.reply('Link Invalid')
-sendsearch(ctx)
-y2mateV(q).then((tes) => {
-console.log(tes)
-ctx.replyWithPhoto({
-url: tes[0].thumb,
-filename: tes[0].judul+'.jpg'
-},{caption: `*「 YOUTUBE MP4 」*\n\n• *Judul* : ${tes[0].judul}\n• *Size* : ${tes[0].size}\n\nMohon Tunggu sebentar video sedang dikirim`})
-ctx.replyWithVideo({
-url: tes[0].link,
-filename: tes[0].output
-}).catch(e => { ctx.reply('Link Invalid')
- console.log(e)
-})
-ctx.replyWithChatAction("upload_video")
-})
-})
- bot.command('play', ctx => {
-if(ctx.message.text.split('play')[1] == '') return ctx.reply('Nyari apa kak?')
-sendsearch(ctx)
-yts(`${ctx.message.text.split('play')[1]}`).then((res) => {
-if (res.all[0].duration.seconds > 600 ) return ctx.replyWithPhoto({
-url: res.all[0].thumbnail},{caption: `*「 YOUTUBE MP3 」*\n\n• *Judul* : ${res.all[0].title}\n• *Durasi* : ${res.all[0].timestamp}\n\nMaaf, Durasi video melebihi 10 Menit\nLagu Tidak akan dikirim`})
-let thumbInfo = `❒「 Youtube Play 」
+break
+case 'sticker':
+if(!isQuotedImage) return reply('Reply gambar')
+iky.reply.sticker(await getBuffer(limk))
+break
+case 'playmp3':
+if (args.length < 1) return reply('lagu apa?\ncontoh: /playmp3 loli')
+wait = await iky.reply.text('Mohon Tunggu',{ asReply: true })
+res = await yts(`${q}`).catch(e => reply('Yang kamu Cari Tidak Ditemukan'))
+if (res.all[0].duration.seconds > 600 ) return iky.reply.photo(res.all[0].thumbnail,{caption: `*「 YOUTUBE MP3 」*\n\n• *Judul* : ${res.all[0].title}\n• *Durasi* : ${res.all[0].timestamp}\n\nMaaf, Durasi video melebihi 10 Menit\nLagu Tidak akan dikirim`})
+ thumbInfo = `❒「 Youtube Play 」
 ├ Judul : ${res.all[0].title}
 ├ ID Video : ${res.all[0].videoId}
 ├ Diupload Pada : ${res.all[0].ago}
@@ -772,140 +448,50 @@ let thumbInfo = `❒「 Youtube Play 」
 
 Tunggu Proses Mengirim.....
 `
-ctx.replyWithPhoto({
-url: res.all[0].image,
-filename: res.all[0].title+'.jpg'
-},{caption: thumbInfo})
-y2mateA(res.all[0].url).then((tes) => {
+re = await iky.reply.photo(res.all[0].image,{caption: thumbInfo})
+tes = await y2mateA(res.all[0].url)
 console.log(tes)
-ctx.replyWithChatAction("upload_audio")
-ctx.replyWithAudio({
-url: tes[0].link,
-filename: tes[0].output
-}).catch(e => ctx.reply('error silahkan cari lagu lain'))
-}).catch(e => ctx.reply('error silahkan cari lagu lain'))
-}).catch(e => ctx.reply('error silahkan cari lagu lain'))
-})
-bot.command('pinterest', (ctx) => {
-if(ctx.message.text.split('pinterest')[1] == '') return ctx.reply('Nyari apa kak?')
-sendsearch(ctx)
-toJson(`https://api.zeks.xyz/api/pinimg?apikey=yukinikokurumi21&q=${ctx.message.text.split('pinterest')[1]}`).then((res) =>{
-json = res.data
-pa = Math.floor(Math.random() * json.length)
-paq = json[pa]
-console.log(paq)
-ctx.replyWithPhoto({
-url: paq,
-filename: ctx.message.text.split('pinterest')[1]+'.jpg'
-})}).catch(e => console.log(e))
-})
-//bot.mention('Rizky9788',(ctx) => ctx.reply('ada apa tag ownerku'))
-bot.on('message', async(iky) => {
+iky.reply.audio(await getBuffer(tes[0].link),{ fileName: res.all[0].title+'.mp3', asReply: true})
+bot.deleteMessage(iky.chat.id, wait.message_id)
+break
+case '>':
+if (!isOwner) return 
 try {
-awalan = '/'
-const q = iky.message.text || iky.message.caption || ''
-const command = q.slice(1).trim().split(" ").shift().toLowerCase()
-const args = await argsGet(iky)
-const name = pushname(iky.message.from) 
-const OwnerId = ['Rizky9788']
-const isOwner = OwnerId.includes(name.username)
-const reply = async(text) => {
-bot.telegram.sendMessage(iky.chat.id, text,
-{
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Back', callback_data: 'start'}
-]]},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" })}
-const replyMenu = async(text) => {
-bot.telegram.sendMessage(iky.chat.id, text,
-{
-reply_markup: {
-inline_keyboard: [
- [
-{ text: 'Menu', callback_data: 'start'}
-]]},
-parse_mode: "Markdown",
-disable_web_page_preview: "true" })}
-const isImage = iky.message.hasOwnProperty("photo")
-const isVideo = iky.message.hasOwnProperty("video")
-const isAudio = iky.message.hasOwnProperty("audio")
-const isSticker = iky.message.hasOwnProperty("sticker")
-const isContact = iky.message.hasOwnProperty("contact")
-const isLocation = iky.message.hasOwnProperty("location")
-const isDocument = iky.message.hasOwnProperty("document")
-const isAnimation = iky.message.hasOwnProperty("animation")
-const isMedia = isImage || isVideo || isAudio || isSticker || isContact || isLocation || isDocument || isAnimation
-const Quoted = iky.message.reply_to_message || {}
-const isQuotedImage = Quoted.hasOwnProperty("photo")
-const isQuotedVideo = Quoted.hasOwnProperty("video")
-const isQuotedAudio = Quoted.hasOwnProperty("audio")
-const isQuotedSticker = Quoted.hasOwnProperty("sticker")
-const isQuotedContact = Quoted.hasOwnProperty("contact")
-const isQuotedLocation = Quoted.hasOwnProperty("location")
-const isQuotedDocument = Quoted.hasOwnProperty("document")
-const isQuotedAnimation = Quoted.hasOwnProperty("animation")
-const isQuoted = iky.message.hasOwnProperty("reply_to_message")
-var file_id = ""
-if (isQuoted) {
-qu = isQuotedImage ? iky.reply_to_photo[iky.reply_to_photo.length - 1].file_id : isQuotedVideo ? iky.reply_to_video.file_id : isQuotedAudio ? iky.reply_to_audio.file_id : isQuotedSticker ? iky.reply_to_sticker.file_id :
-isQuotedDocument ? iky.reply_to_document.file_id :
-isQuotedAnimation ? iky.reply_to_animation.file_id : ""
+reply(util.format(await eval(`;(async () => { ${q} })()`)))
+} catch (e) {
+reply(`${e}`)
 }
-const isCmd = q.startsWith(awalan)
-const isGroup = iky.chat.type.includes("group")
-const groupName = isGroup ? iky.chat.title : ""
-if (afk.includes(q)) {
-ini_txt = "Maaf user yang anda tag sedang afk. "
-reply(ini_txt)
-return
-}
-if (afk.includes('@'+name.username)) {
-reply("Anda telah keluar dari mode afk.")
-afs = afk.indexOf('@'+name.username)
-afk.splice(afs,1)
-fs.writeFileSync("./afk.json", JSON.stringify(afk))
-return
-}
-switch (command) {
+break
 case 'afk':
-if(isGroup) return reply('Gunakan Perintah ini di chat pribadi')
-alasan = args.join(" ")
-afk.push('@'+name.username)
+if(!isGroup) return reply('Perintah hanya dapat di gunakan dalam group')
+afk.push('@'+sender)
 fs.writeFileSync('./afk.json', JSON.stringify(afk))
-console.log('@'+name.username)
-ini_txt = "Anda telah afk. \nJika ada yang tag kamu bot akan memberitahukan bahwa kamu off\nJika ingin kembali dari afk ketik hai di sini"
+console.log('@'+sender)
+ini_txt = "Anda telah afk. "
 reply(ini_txt)
 break
-case 'tes':
-console.log(iky)
+case 'playmp4':
+if (args.length < 1) return reply('video apa?\ncontoh: /playmp4 loli')
+wait = await iky.reply.text('Mohon Tunggu',{ asReply: true })
+res = await yts(`${q}`)
+if (res.all[0].duration.seconds > 600 ) return iky.reply.photo(res.all[0].thumbnail,{caption: `*「 YOUTUBE MP4 」*\n\n• *Judul* : ${res.all[0].title}\n• *Durasi* : ${res.all[0].timestamp}\n\nMaaf, Durasi video melebihi 10 Menit\nVideo Tidak akan dikirim`})
+ thumbInfo = `❒「 Youtube Play 」
+├ Judul : ${res.all[0].title}
+├ ID Video : ${res.all[0].videoId}
+├ Diupload Pada : ${res.all[0].ago}
+├ Views : ${res.all[0].views}
+├ Durasi : ${res.all[0].timestamp}
+├ Channel : ${res.all[0].author.name}
+└ Link Channel : ${res.all[0].author.url}
+
+Tunggu Proses Mengirim.....
+`
+re = await iky.reply.photo(res.all[0].image,{caption: thumbInfo})
+tes = await y2mateV(res.all[0].url)
+console.log(tes)
+iky.reply.video(await getBuffer(tes[0].link),{ fileName: res.all[0].title+'.mp4', asReply: true})
+bot.deleteMessage(iky.chat.id, wait.message_id)
 break
-case 'menu':
-sendHelp(iky)
-break
-case 'return':
-if(!isOwner) return 
-iky.reply('Excuting '+args.join(' '))
-try {
- reply(util.format(await eval(`;(async () => { ${args.join(' ')} })()`)))
-} catch(e) {
-iky.reply(`Error: ${e}`)
-}
-default:
-if(!isGroup && !isCmd && !isMedia) {
-await iky.replyWithChatAction("typing")
-simi = await toJson(`https://fdciabdul.tech/api/ayla/?pesan=${q}`)
-await replyMenu(simi.jawab)
-console.log(chalk.whiteBright(""), chalk.cyanBright("[ SIMI ]"), chalk.whiteBright(q), chalk.greenBright("from"), chalk.whiteBright(user.username))
-console.log(chalk.whiteBright(""), chalk.cyanBright("[ BOT ]"), chalk.whiteBright(simi.jawab), chalk.greenBright("from"), chalk.whiteBright(user.username))
-}
-}
-} catch(e) {
-console.log(e)
 }
 })
-bot.launch()
-process.once('SIGINT', () => bot.stop('SIGINT'))
-process.once('SIGTERM', () => bot.stop('SIGTERM'))
+bot.start()
